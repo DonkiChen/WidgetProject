@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="OrderStatusView">
+        <attr name="android:textColor" />
+        <attr name="android:textSize" />
+        <attr name="osvRadius" format="dimension" />
+        <attr name="osvRingRadius" format="dimension" />
+        <attr name="osvLineWidth" format="dimension" />
+        <attr name="osvCircleColor" format="color" />
+        <attr name="osvLineColor" format="color" />
+        <attr name="android:entries" />
+        <attr name="osvCircleTitleSpacing" format="dimension" />
+    </declare-styleable>
+</resources>

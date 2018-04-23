@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">WidgetProject</string>
+
+    <array name="demo">
+        <item>demo</item>
+        <item>demo</item>
+        <item>demo</item>
+        <item>demo</item>
+        <item>demo</item>
+    </array>
+</resources>

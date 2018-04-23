@@ -13,7 +13,6 @@ import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ import test.widgetproject.entity.City;
 
 public class CityUtils extends BaseUtils {
 
-    public synchronized static void getCities(final OnDataLoadListener listener) {
+    public static void getCities(final OnDataLoadListener listener) {
         Flowable.create(new FlowableOnSubscribe<JSONArray>() {
             @Override
             public void subscribe(FlowableEmitter<JSONArray> e) throws Exception {

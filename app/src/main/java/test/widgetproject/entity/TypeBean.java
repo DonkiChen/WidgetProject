@@ -33,7 +33,7 @@ public class TypeBean {
         this.type = type;
     }
 
-    public static class ItemBean{
+    public static class ItemBean {
         private String item;
 
         public ItemBean(String item) {

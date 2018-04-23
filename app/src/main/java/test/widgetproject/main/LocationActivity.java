@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.mvp.base.util.CollectionUtils;
 import com.mvp.base.util.DisplayUtils;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import test.widgetproject.adapter.HeaderCityAdapter;
 import test.widgetproject.database.CityDao;
 import test.widgetproject.database.CityDatabase;
 import test.widgetproject.entity.City;
+import test.widgetproject.util.CityUtils;
 
 /**
  * Created on 2018/4/20.
@@ -53,6 +55,7 @@ public class LocationActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         mCityDao = CityDatabase.getInstance().getCityDao();
         super.onCreate(savedInstanceState);
+        getCities();
     }
 
     @Override
@@ -67,19 +70,28 @@ public class LocationActivity extends BaseActivity {
         return R.layout.activity_location;
     }
 
-    @Override
-    public void initView() {
-        mCityAdapter = new CityAdapter();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        initHeaderView();
-        mCityAdapter.addHeaderView(mHeaderView);
-        mRecyclerView.setAdapter(mCityAdapter);
+    private void getCities() {
         mDisposables.add(mCityDao.queryCities()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<City>>() {
                     @Override
                     public void accept(List<City> cities) throws Exception {
+                        if (CollectionUtils.isEmpty(cities)) {
+                            CityUtils.getCities(new CityUtils.OnDataLoadListener() {
+                                @Override
+                                public void onStart() {
+
+                                }
+
+                                @Override
+                                public void onFinished(List<City> list) {
+                                    CityDatabase.getInstance().getCityDao().insertCities(list.toArray(new City[list.size()]));
+                                    getCities();
+                                }
+                            });
+                            return;
+                        }
                         mCityAdapter.setNewData(cities);
                         mPinyinMap.clear();
                         int count = cities.size();
@@ -93,6 +105,15 @@ public class LocationActivity extends BaseActivity {
                         }
                     }
                 }));
+    }
+
+    @Override
+    public void initView() {
+        mCityAdapter = new CityAdapter();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        initHeaderView();
+        mCityAdapter.addHeaderView(mHeaderView);
+        mRecyclerView.setAdapter(mCityAdapter);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(DisplayUtils.sp2px(14));
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {

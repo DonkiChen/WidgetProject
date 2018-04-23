@@ -12,6 +12,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import test.widgetproject.adapter.ItemAdapter;
 import test.widgetproject.adapter.TypeAdapter;
 import test.widgetproject.entity.TypeBean;
+import test.widgetproject.util.MathUtils;
 
 /**
  * Created on 2018/4/13.
@@ -44,10 +46,8 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
     private FrameLayout mFlRoot;
     private int mTitleAndStatusHeight;
     private TypeAdapter mTypeAdapter;
+    private int mAnimationViewSize = 100;
 
-    private static boolean between(double number, double small, double big) {
-        return small <= number && number <= big;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +130,9 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 final TextView tvAnimation = new TextView(LinkRecyclerViewActivity.this);
                 tvAnimation.setText(itemAdapter.getItem(position).getItem());
+                tvAnimation.setGravity(Gravity.CENTER);
                 tvAnimation.setBackgroundColor(Color.BLUE);
-                mFlRoot.addView(tvAnimation, 100, 100);
+                mFlRoot.addView(tvAnimation, mAnimationViewSize, mAnimationViewSize);
                 animateByPath(view, tvAnimation);
             }
         });
@@ -141,7 +142,7 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
         int count = mRvType.getChildCount();
         for (int i = 0; i < count; i++) {
             View view = mRvType.getChildAt(i);
-            if (between(y, view.getTop(), view.getBottom()) && between(x, view.getLeft(), view.getRight())) {
+            if (MathUtils.between(y, view.getTop(), view.getBottom()) && MathUtils.between(x, view.getLeft(), view.getRight())) {
                 return mRvType.getChildAdapterPosition(view);
             }
         }
@@ -168,10 +169,10 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
         int[] endLoc = new int[2];
         mIvShop.getLocationInWindow(endLoc);
 
-        int startX = startLoc[0] + clickedView.getWidth() / 2 - tvAnimation.getMeasuredWidth() / 2 - 50;
-        int startY = startLoc[1] - mTitleAndStatusHeight + clickedView.getHeight() / 2 - tvAnimation.getMeasuredHeight() / 2 - 50;
-        float toX = 0;
-        float toY = 1920 - mTitleAndStatusHeight - DisplayUtils.dp2px(100);
+        int startX = startLoc[0] + (clickedView.getWidth() - mAnimationViewSize) / 2;
+        int startY = startLoc[1] - mTitleAndStatusHeight + (clickedView.getHeight() - mAnimationViewSize) / 2;
+        float toX = endLoc[0] + (mIvShop.getWidth() - mAnimationViewSize) / 2;
+        float toY = endLoc[1] - mTitleAndStatusHeight + (mIvShop.getHeight() - mAnimationViewSize) / 2;
 
         Path path = new Path();
         path.moveTo(startX, startY);

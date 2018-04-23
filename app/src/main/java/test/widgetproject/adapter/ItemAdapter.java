@@ -12,13 +12,13 @@ import test.widgetproject.main.R;
  * @author ChenFanlin
  */
 
-public class ItemAdapter extends BaseQuickAdapter<TypeBean.ItemBean,BaseViewHolder> {
+public class ItemAdapter extends BaseQuickAdapter<TypeBean.ItemBean, BaseViewHolder> {
     public ItemAdapter() {
         super(R.layout.item_demo);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, TypeBean.ItemBean item) {
-        helper.setText(R.id.tv_demo,item.getItem());
+        helper.setText(R.id.tv_demo, item.getItem());
     }
 }

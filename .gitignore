@@ -1,5 +1,5 @@
 
-# Created by https://www.gitignore.io/api/java,android,androidstudio
+# Created by https://www.gitignore.io/api/android,androidstudio
 
 ### Android ###
 # Built application files
@@ -164,24 +164,6 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
-### Java ###
-# Compiled class file
 
-# Log file
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-
-# Package Files #
-*.jar
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-
-
-# End of https://www.gitignore.io/api/java,android,androidstudio
+# End of https://www.gitignore.io/api/android,androidstudio
 .idea/

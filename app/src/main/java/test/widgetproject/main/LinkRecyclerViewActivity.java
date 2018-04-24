@@ -80,7 +80,9 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 TypeBean typeBean = mTypeAdapter.getItem(position);
-                mRvItem.smoothScrollToPosition(findItemFirstPosition(typeBean));
+//                mRvItem.smoothScrollToPosition(findItemFirstPosition(typeBean));
+                LinearLayoutManager layoutManager = (LinearLayoutManager) mRvItem.getLayoutManager();
+                layoutManager.scrollToPositionWithOffset(findItemFirstPosition(typeBean), 0);
             }
         });
         mRvType.getItemAnimator().setChangeDuration(0);
@@ -90,7 +92,9 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
                 TypeBean typeBean = mTypeAdapter.getItem(findTypeByTouch(event.getX(), event.getY()));
                 if (typeBean != null) {
                     int itemPosition = findItemFirstPosition(typeBean);
-                    mRvItem.smoothScrollToPosition(itemPosition);
+//                    mRvItem.smoothScrollToPosition(itemPosition);
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) mRvItem.getLayoutManager();
+                    layoutManager.scrollToPositionWithOffset(itemPosition, 0);
                 }
                 return false;
             }

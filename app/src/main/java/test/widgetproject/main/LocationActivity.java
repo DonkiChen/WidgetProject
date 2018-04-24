@@ -1,20 +1,20 @@
 package test.widgetproject.main;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.mvp.base.util.CollectionUtils;
-import com.mvp.base.util.DisplayUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +23,7 @@ import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import test.widgetproject.adapter.CityAdapter;
 import test.widgetproject.adapter.HeaderCityAdapter;
@@ -30,6 +31,8 @@ import test.widgetproject.database.CityDao;
 import test.widgetproject.database.CityDatabase;
 import test.widgetproject.entity.City;
 import test.widgetproject.util.CityUtils;
+import test.widgetproject.widget.HeaderDecoration;
+import test.widgetproject.widget.SlideBar;
 
 /**
  * Created on 2018/4/20.
@@ -41,6 +44,8 @@ public class LocationActivity extends BaseActivity {
     private static final String TAG = LocationActivity.class.getSimpleName();
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.slideBar)
+    SlideBar mSlideBar;
 
     private View mHeaderView;
 
@@ -48,8 +53,9 @@ public class LocationActivity extends BaseActivity {
     private CompositeDisposable mDisposables = new CompositeDisposable();
     private CityDao mCityDao;
     private HashMap<String, Integer> mPinyinMap = new HashMap<>();
-    private Paint mPaint = new Paint();
-    private int mPinyinHeight = DisplayUtils.dp2px(36);
+    private LinearLayoutManager mLinearLayoutManager;
+    private PopupWindow mPinyinWindow;
+    private TextView mTvPinyin;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,99 +76,20 @@ public class LocationActivity extends BaseActivity {
         return R.layout.activity_location;
     }
 
-    private void getCities() {
-        mDisposables.add(mCityDao.queryCities()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<City>>() {
-                    @Override
-                    public void accept(List<City> cities) throws Exception {
-                        if (CollectionUtils.isEmpty(cities)) {
-                            CityUtils.getCities(new CityUtils.OnDataLoadListener() {
-                                @Override
-                                public void onStart() {
-
-                                }
-
-                                @Override
-                                public void onFinished(List<City> list) {
-                                    CityDatabase.getInstance().getCityDao().insertCities(list.toArray(new City[list.size()]));
-                                    getCities();
-                                }
-                            });
-                            return;
-                        }
-                        mCityAdapter.setNewData(cities);
-                        mPinyinMap.clear();
-                        int count = cities.size();
-                        for (int i = 0; i < count; i++) {
-                            City city = cities.get(i);
-                            String firstLetter = String.valueOf(city.cityNamePinyin.charAt(0));
-
-                            if (!mPinyinMap.containsKey(firstLetter)) {
-                                mPinyinMap.put(firstLetter, i + mCityAdapter.getHeaderLayoutCount());
-                            }
-                        }
-                    }
-                }));
-    }
-
     @Override
     public void initView() {
         mCityAdapter = new CityAdapter();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
         initHeaderView();
         mCityAdapter.addHeaderView(mHeaderView);
         mRecyclerView.setAdapter(mCityAdapter);
-        mPaint.setAntiAlias(true);
-        mPaint.setTextSize(DisplayUtils.sp2px(14));
-        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                int childCount = parent.getChildCount();
-                for (int i = 0; i < childCount; i++) {
-                    View view = parent.getChildAt(i);
-                    int position = parent.getChildAdapterPosition(view);
-                    if (mPinyinMap.containsValue(position)) {
-                        mPaint.setColor(Color.parseColor("#E2E2E2"));
-                        c.drawRect(view.getLeft(), view.getTop() - mPinyinHeight,
-                                view.getRight(),
-                                view.getTop(), mPaint);
-                        String letter = null;
-                        for (Map.Entry<String, Integer> entry : mPinyinMap.entrySet()) {
-                            if (entry.getValue() == position) {
-                                letter = entry.getKey();
-                                break;
-                            }
-                        }
-                        if (letter == null) {
-                            continue;
-                        }
-                        mPaint.setColor(Color.BLACK);
-                        // 垂直居中的baseline计算方法: ascent 和 descent 都是相对于 baseline, 所以得出等式
-                        // (Ascent, Descent为相对于view坐标)
-                        // 1. pinyin.centerY = (Ascent + Descent)/2
-                        // 2. Ascent = baseline + ascent
-                        // 3. Descent = baseline + descent
-                        // => pinyin.centerY = (baseline + ascent + baseline + descent) / 2
-                        // => baseline = pinyin.centerY - (ascent + descent) / 2
-                        // 4. pinyin.centerY = (view.getTop() - mPinyinHeight + view.getTop()) / 2
-                        // => baseline = view.getTop() - (ascent + descent + mPinyinHeight) / 2
+        HeaderDecoration headerDecoration = new HeaderDecoration(mPinyinMap);
+        mRecyclerView.addItemDecoration(headerDecoration);
 
-                        float textY = view.getTop() - (mPaint.ascent() + mPaint.descent() + mPinyinHeight) / 2;
-                        c.drawText(letter, 0, textY, mPaint);
-                    }
-                }
-            }
-
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                int position = parent.getChildAdapterPosition(view);
-                if (mPinyinMap.containsValue(position)) {
-                    outRect.top = mPinyinHeight;
-                }
-            }
-        });
+        mPinyinWindow = new PopupWindow(getWindow().getDecorView(), -2, -2, false);
+        mPinyinWindow.setContentView(getLayoutInflater().inflate(R.layout.dialog_pinyin, null, false));
+        mTvPinyin = mPinyinWindow.getContentView().findViewById(R.id.tv_pinyin);
     }
 
     private void initHeaderView() {
@@ -186,6 +113,100 @@ public class LocationActivity extends BaseActivity {
         recyclerViewHot.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerViewHot.setAdapter(cityHotAdapter);
         cityHotAdapter.setNewData(items);
+    }
 
+    private void getCities() {
+        mDisposables.add(mCityDao.queryCities()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .filter(new Predicate<List<City>>() {
+                    @Override
+                    public boolean test(List<City> cities) throws Exception {
+                        if (CollectionUtils.isEmpty(cities)) {
+                            CityUtils.getCities(new CityUtils.OnDataLoadListener() {
+                                @Override
+                                public void onStart() {
+
+                                }
+
+                                @Override
+                                public void onFinished(List<City> list) {
+                                    mCityDao.insertCities(list.toArray(new City[list.size()]));
+                                    getCities();
+                                }
+                            });
+                            return false;
+                        }
+                        return true;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<City>>() {
+                    @Override
+                    public void accept(List<City> cities) throws Exception {
+                        mCityAdapter.setNewData(cities);
+                        mPinyinMap.clear();
+                        int count = cities.size();
+                        for (int i = 0; i < count; i++) {
+                            City city = cities.get(i);
+                            String firstLetter = String.valueOf(city.cityNamePinyin.charAt(0));
+
+                            if (!mPinyinMap.containsKey(firstLetter)) {
+                                mPinyinMap.put(firstLetter, i + mCityAdapter.getHeaderLayoutCount());
+                            }
+                        }
+                        mPinyinMap.put("热门", 0);
+                        initSliderBar();
+
+                        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                int position = mLinearLayoutManager.findFirstVisibleItemPosition();
+                                if (mPinyinMap.containsValue(position)) {
+                                    String value = null;
+                                    for (Map.Entry<String, Integer> entry : mPinyinMap.entrySet()) {
+                                        if (entry.getValue() == position) {
+                                            value = entry.getKey();
+                                            break;
+                                        }
+                                    }
+                                    if (value == null) {
+                                        return;
+                                    }
+                                    mSlideBar.setSelected(value, false);
+                                }
+                            }
+                        });
+                    }
+                }));
+    }
+
+    private void initSliderBar() {
+        String[] pinyinArray = new String[mPinyinMap.size()];
+        mPinyinMap.keySet().toArray(pinyinArray);
+        Arrays.sort(pinyinArray, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return mPinyinMap.get(o1) - mPinyinMap.get(o2);
+            }
+        });
+
+        mSlideBar.clear();
+        mSlideBar.addItems(pinyinArray);
+        mSlideBar.setOnBarTouchListener(new SlideBar.OnBarTouchListener() {
+            @Override
+            public void onTouchDown(int index, String item) {
+                int position = mPinyinMap.get(item);
+                mLinearLayoutManager.scrollToPositionWithOffset(position, 0);
+
+                mTvPinyin.setText(item.substring(0, 1));
+                mPinyinWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+            }
+
+            @Override
+            public void onTouchUp() {
+                mPinyinWindow.dismiss();
+            }
+        });
     }
 }

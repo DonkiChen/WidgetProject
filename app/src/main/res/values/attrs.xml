@@ -11,4 +11,11 @@
         <attr name="android:entries" />
         <attr name="osvCircleTitleSpacing" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="SlideBar">
+        <attr name="barNormalTextColor" format="color" />
+        <attr name="barSelectedTextColor" format="color" />
+        <attr name="barNormalTextSize" format="dimension"/>
+        <attr name="barSelectedTextSize" format="dimension"/>
+    </declare-styleable>
 </resources>

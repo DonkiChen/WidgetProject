@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="108dp"
+    android:layout_height="108dp"
+    android:background="@drawable/bg_dialog_pinyin">
+
+    <TextView
+        android:id="@+id/tv_pinyin"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:gravity="center"
+        android:textColor="#FFF"
+        android:textSize="64sp"
+        tools:text="A" />
+</FrameLayout>

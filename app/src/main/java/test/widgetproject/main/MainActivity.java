@@ -16,7 +16,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.btn_link_recycler_view, R.id.btn_swipe_image_verify, R.id.btn_location})
+    @OnClick({R.id.btn_link_recycler_view, R.id.btn_swipe_image_verify, R.id.btn_location, R.id.btn_label})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_link_recycler_view:
@@ -27,6 +27,9 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.btn_location:
                 startActivity(LocationActivity.class);
+                break;
+            case R.id.btn_label:
+                startActivity(LabelActivity.class);
                 break;
         }
     }

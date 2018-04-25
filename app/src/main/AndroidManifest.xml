@@ -20,6 +20,7 @@
         <activity android:name=".LinkRecyclerViewActivity" />
         <activity android:name=".SwipeImageVerifyActivity" />
         <activity android:name=".LocationActivity" />
+        <activity android:name=".LabelActivity" />
     </application>
 
 </manifest>

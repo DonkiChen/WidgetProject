@@ -62,13 +62,14 @@ public class SlideBar extends View {
         if (attrs != null) {
             TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SlideBar);
             mNormalTextColor = typedArray.getColor(R.styleable.SlideBar_barNormalTextColor, mNormalTextColor);
-            mNormalTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideBar_barNormalTextColor, mNormalTextSize);
-            mSelectedTextColor = typedArray.getColor(R.styleable.SlideBar_barNormalTextColor, mSelectedTextColor);
-            mSelectedTextSize = typedArray.getColor(R.styleable.SlideBar_barNormalTextColor, mSelectedTextSize);
+            mNormalTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideBar_barNormalTextSize, mNormalTextSize);
+            mSelectedTextColor = typedArray.getColor(R.styleable.SlideBar_barSelectedTextColor, mSelectedTextColor);
+            mSelectedTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideBar_barSelectedTextSize, mNormalTextSize);
             typedArray.recycle();
         }
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setTextSize(Math.max(mNormalTextSize, mSelectedTextSize));
     }
 
     @Override
@@ -107,6 +108,7 @@ public class SlideBar extends View {
             float needWidth = mPaint.measureText(item);
             //长短不同的字符串的x居中
             textX = getPaddingLeft() + (mMaxItemWidth - needWidth) / 2;
+            Log.d(TAG, "onSizeChanged: mMaxItemWidth = " + mMaxItemWidth + " needWidth =" + needWidth);
             location[0] = textX;
             location[1] = textY;
             textY += mItemHeight;
@@ -137,6 +139,7 @@ public class SlideBar extends View {
             }
             mMaxItemWidth = maxWidth;
             widthSize = maxWidth + getPaddingLeft() + getPaddingRight();
+            Log.d(TAG, "onMeasure: widthSize = " + widthSize + " maxWidth = " + maxWidth);
         }
 
         if (heightMode == MeasureSpec.AT_MOST) {

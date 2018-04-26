@@ -171,11 +171,9 @@ public class VerifyImage extends android.support.v7.widget.AppCompatImageView {
     }
 
     private void reset() {
-//        setDragOffset(0);
-
         createMaskPath(false);
         invalidate();
-        setDragOffset(mOffsetX - mBlurMaskRadius);
+        setDragOffset(0);
         mSeekBar.post(new Runnable() {
             @Override
             public void run() {
@@ -213,7 +211,16 @@ public class VerifyImage extends android.support.v7.widget.AppCompatImageView {
                         break;
                     case MotionEvent.ACTION_MOVE:
                         // FIXME: 2018/4/20 左右会超出范围
-                        setDragOffset((int) event.getX());
+                        int x;
+                        if (event.getX() < 0) {
+                            x = 0;
+                        } else if (event.getX() > getWidth()) {
+                            x = getWidth();
+                        } else {
+                            x = (int) event.getX();
+                        }
+                        Log.d(TAG, "onTouch: " + event.getX() + "`" + getWidth());
+                        setDragOffset(x);
                         break;
                 }
                 return false;

@@ -29,6 +29,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
     private int mHeaderBackgroundColor = Color.parseColor("#E2E2E2");
     private int mHeaderTextColor = Color.BLACK;
     private int mHeaderTextSize = DisplayUtils.sp2px(14);
+    private int mHeaderTextXOffset = 0;
 
     public HeaderDecoration(Map<String, Integer> headerMap) {
         mHeaderMap = headerMap;
@@ -68,6 +69,14 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
         mHeaderTextSize = headerTextSize;
     }
 
+    public int getHeaderTextXOffset() {
+        return mHeaderTextXOffset;
+    }
+
+    public void setHeaderTextXOffset(int headerTextXOffset) {
+        mHeaderTextXOffset = headerTextXOffset;
+    }
+
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         int childCount = parent.getChildCount();
@@ -102,7 +111,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
                 // => baseline = view.getTop() - (ascent + descent + mHeaderHeight) / 2
 
                 float textY = view.getTop() - (mPaint.ascent() + mPaint.descent() + mHeaderHeight) / 2;
-                c.drawText(letter, 0, textY, mPaint);
+                c.drawText(letter, mHeaderTextXOffset, textY, mPaint);
             }
         }
     }

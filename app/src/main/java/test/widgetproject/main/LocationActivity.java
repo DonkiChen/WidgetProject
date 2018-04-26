@@ -67,7 +67,6 @@ public class LocationActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         mDisposables.clear();
-        CityDatabase.getInstance().close();
         super.onDestroy();
     }
 

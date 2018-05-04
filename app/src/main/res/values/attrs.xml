@@ -26,5 +26,14 @@
             <enum name="bottomLeft" value="2" />
             <enum name="bottomRight" value="3" />
         </attr>
+        <attr name="labelBackgroundColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="DualProgressView">
+        <attr name="dpv_anim_duration" format="integer" />
+        <attr name="dpv_outer_color" format="color" />
+        <attr name="dpv_inner_color" format="color" />
+        <attr name="dpv_thickness" format="dimension" />
+        <attr name="dpv_inner_padding" format="dimension" />
     </declare-styleable>
 </resources>

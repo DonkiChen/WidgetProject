@@ -26,7 +26,9 @@ public class LabelView extends android.support.v7.widget.AppCompatTextView {
     private int mRotationDegrees = 0;
     private LabelGravity mLabelGravity;
     private int mRotationX, mRotationY;
+    private int mLabelBackgroundColor;
     private float mOffset;
+    private PorterDuffXfermode mPorterDuffXfermodeATop = new PorterDuffXfermode(PorterDuff.Mode.DST_ATOP);
 
     public LabelView(Context context) {
         this(context, null);
@@ -38,6 +40,7 @@ public class LabelView extends android.support.v7.widget.AppCompatTextView {
 
     public LabelView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setLayerType(LAYER_TYPE_NONE, null);
         init(attrs);
     }
 
@@ -45,13 +48,12 @@ public class LabelView extends android.support.v7.widget.AppCompatTextView {
         if (attrs != null) {
             TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.LabelView);
             mLabelGravity = LabelGravity.fromValue(typedArray.getInt(R.styleable.LabelView_labelGravity, 0));
+            mLabelBackgroundColor = typedArray.getColor(R.styleable.LabelView_labelBackgroundColor, Color.WHITE);
             typedArray.recycle();
         }
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.BLACK);
-        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+        mPaint.setColor(mLabelBackgroundColor);
         mPath = new Path();
     }
 
@@ -61,12 +63,18 @@ public class LabelView extends android.support.v7.widget.AppCompatTextView {
         computeRotation();
         computeOffset();
 
-        canvas.save();
+        //离屏缓冲,确保Xfermode达到预期效果
+        int saved1 = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
+        //对canvas的旋转和偏移,让文字在预期位置
+        int saved2 = canvas.save();
         canvas.rotate(mRotationDegrees, mRotationX, mRotationY);
         canvas.translate(mOffset, 0);
         super.onDraw(canvas);
-        canvas.restore();
+        canvas.restoreToCount(saved2);
+        mPaint.setXfermode(mPorterDuffXfermodeATop);
         canvas.drawPath(mPath, mPaint);
+        mPaint.setXfermode(null);
+        canvas.restoreToCount(saved1);
     }
 
     // TODO: 2018/4/25 计算最小高度,宽度

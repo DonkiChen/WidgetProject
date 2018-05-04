@@ -13,11 +13,9 @@ import android.widget.TextView;
 import com.mvp.base.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -28,7 +26,7 @@ import io.reactivex.schedulers.Schedulers;
 import test.widgetproject.adapter.CityAdapter;
 import test.widgetproject.adapter.HeaderCityAdapter;
 import test.widgetproject.database.CityDao;
-import test.widgetproject.database.CityDatabase;
+import test.widgetproject.database.DbHelper;
 import test.widgetproject.entity.City;
 import test.widgetproject.util.CityUtils;
 import test.widgetproject.widget.HeaderDecoration;
@@ -50,24 +48,18 @@ public class LocationActivity extends BaseActivity {
     private View mHeaderView;
 
     private CityAdapter mCityAdapter;
-    private CompositeDisposable mDisposables = new CompositeDisposable();
+
     private CityDao mCityDao;
-    private HashMap<String, Integer> mPinyinMap = new HashMap<>();
+    private Map<String, Integer> mPinyinMap = new TreeMap<>();
     private LinearLayoutManager mLinearLayoutManager;
     private PopupWindow mPinyinWindow;
     private TextView mTvPinyin;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        mCityDao = CityDatabase.getInstance().getCityDao();
+        mCityDao = DbHelper.getInstance().getCityDao();
         super.onCreate(savedInstanceState);
         getCities();
-    }
-
-    @Override
-    protected void onDestroy() {
-        mDisposables.clear();
-        super.onDestroy();
     }
 
     @Override
@@ -115,7 +107,7 @@ public class LocationActivity extends BaseActivity {
     }
 
     private void getCities() {
-        mDisposables.add(mCityDao.queryCities()
+        addDisposable(mCityDao.queryCities()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .filter(new Predicate<List<City>>() {
@@ -154,7 +146,7 @@ public class LocationActivity extends BaseActivity {
                                 mPinyinMap.put(firstLetter, i + mCityAdapter.getHeaderLayoutCount());
                             }
                         }
-                        mPinyinMap.put("热门", 0);
+//                        mPinyinMap.put("热门", 0);
                         initSliderBar();
 
                         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -183,12 +175,14 @@ public class LocationActivity extends BaseActivity {
     private void initSliderBar() {
         String[] pinyinArray = new String[mPinyinMap.size()];
         mPinyinMap.keySet().toArray(pinyinArray);
+        /*
         Arrays.sort(pinyinArray, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 return mPinyinMap.get(o1) - mPinyinMap.get(o2);
             }
         });
+        */
 
         mSlideBar.clear();
         mSlideBar.addItems(pinyinArray);

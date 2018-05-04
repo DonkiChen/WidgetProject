@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created on 2018/4/13.
@@ -18,6 +20,7 @@ import butterknife.Unbinder;
 @SuppressLint("Registered")
 public abstract class BaseActivity extends AppCompatActivity {
     private Unbinder mUnbinder;
+    private CompositeDisposable mDisposables = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,8 +32,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mDisposables.clear();
         mUnbinder.unbind();
         super.onDestroy();
+    }
+
+    public void addDisposable(Disposable... disposables) {
+        mDisposables.addAll(disposables);
     }
 
     public abstract int getLayoutRes();

@@ -36,4 +36,11 @@
         <attr name="dpv_thickness" format="dimension" />
         <attr name="dpv_inner_padding" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="ProgressTextView">
+        <attr name="ptvColor" format="color" />
+        <attr name="ptvWidth" format="dimension" />
+        <attr name="ptvFitTextHeight" format="boolean"/>
+        <attr name="ptvIgnorePadding" format="boolean"/>
+    </declare-styleable>
 </resources>

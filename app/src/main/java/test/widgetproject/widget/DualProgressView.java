@@ -327,7 +327,6 @@ public class DualProgressView extends View {
 
 //        canvas.drawArc(mOuterCircleRect, mStartAngle + mIndeterminateRotateOffset, mIndeterminateSweep, false, mOuterCirclePaint);
         canvas.drawArc(mInnerCircleRect, mStartAngle + mIndeterminateRotateOffset + 180f, mIndeterminateSweep, false, mInnerCirclePaint);
-        Log.d(TAG, "onDraw: startAngle:" + (mStartAngle + mIndeterminateRotateOffset + 180f) + " sweep:" + mIndeterminateSweep);
 
     }
 

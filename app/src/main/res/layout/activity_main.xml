@@ -34,9 +34,9 @@
         android:text="label" />
 
     <Button
-        android:id="@+id/btn_ripple"
+        android:id="@+id/btn_reveal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ripple" />
+        android:text="reveal" />
 
 </LinearLayout>

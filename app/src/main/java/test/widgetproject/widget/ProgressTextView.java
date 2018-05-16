@@ -7,10 +7,10 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.animation.LinearInterpolator;
 
 import test.widgetproject.main.R;
@@ -22,7 +22,6 @@ import test.widgetproject.main.R;
  */
 
 public class ProgressTextView extends android.support.v7.widget.AppCompatTextView {
-    private static final String TAG = ProgressTextView.class.getSimpleName();
 
     private boolean mIsShowProgress = false;
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -32,7 +31,7 @@ public class ProgressTextView extends android.support.v7.widget.AppCompatTextVie
     private int mProgressColor;
     private int mProgressWidth;
     private boolean mIsFitTextHeight;
-    private boolean mIsIgorePadding = true;
+    private boolean mIsIgnorePadding = true;
     private Paint.FontMetricsInt mFontMetricsInt = new Paint.FontMetricsInt();
 
     public ProgressTextView(Context context) {
@@ -54,13 +53,57 @@ public class ProgressTextView extends android.support.v7.widget.AppCompatTextVie
             mProgressColor = typedArray.getColor(R.styleable.ProgressTextView_ptvColor, getCurrentTextColor());
             mProgressWidth = typedArray.getDimensionPixelSize(R.styleable.ProgressTextView_ptvWidth, 6);
             mIsFitTextHeight = typedArray.getBoolean(R.styleable.ProgressTextView_ptvFitTextHeight, true);
-            mIsIgorePadding = typedArray.getBoolean(R.styleable.ProgressTextView_ptvIgnorePadding, true);
+            mIsIgnorePadding = typedArray.getBoolean(R.styleable.ProgressTextView_ptvIgnorePadding, true);
             typedArray.recycle();
         }
-
         mPaint.setStyle(Paint.Style.STROKE);
         setProgressColor(mProgressColor);
         setProgressWidth(mProgressWidth);
+    }
+
+    /**
+     * 在显示进度条时不可点击
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return isShowProgress() || super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        int realW;
+        int realH;
+        if (mIsFitTextHeight) {
+            getPaint().getFontMetricsInt(mFontMetricsInt);
+            realH = mFontMetricsInt.bottom - mFontMetricsInt.top;
+            realW = realH;
+        } else if (mIsIgnorePadding) {
+            realW = w;
+            realH = h;
+        } else {
+            realW = w - getPaddingLeft() - getPaddingRight();
+            realH = h - getPaddingTop() - getPaddingBottom();
+        }
+
+        int size = Math.min(realW, realH) - mProgressWidth / 2;
+        int left = (w - size) / 2;
+        int top = (h - size) / 2;
+        if (mIsIgnorePadding) {
+            mRectF.set(left, top,
+                    left + size, top + size);
+        } else {
+            mRectF.set(left + getPaddingLeft(), top + getPaddingTop(),
+                    left + size - getPaddingRight(), top + size - getPaddingBottom());
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mAnimatorSet != null && mAnimatorSet.isRunning()) {
+            mAnimatorSet.cancel();
+        }
     }
 
     // FIXME: 2018/5/7 使角度不固定
@@ -107,43 +150,6 @@ public class ProgressTextView extends android.support.v7.widget.AppCompatTextVie
         });
         mAnimatorSet.play(startAngleAnimator).with(sweepAnimator);
         mAnimatorSet.start();
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        int realW;
-        int realH;
-        if (mIsFitTextHeight) {
-            getPaint().getFontMetricsInt(mFontMetricsInt);
-            realH = mFontMetricsInt.bottom - mFontMetricsInt.top;
-            realW = realH;
-        } else if (mIsIgorePadding) {
-            realW = w;
-            realH = h;
-        } else {
-            realW = w - getPaddingLeft() - getPaddingRight();
-            realH = h - getPaddingTop() - getPaddingBottom();
-        }
-
-        int size = Math.min(realW, realH) - mProgressWidth / 2;
-        int left = (w - size) / 2;
-        int top = (h - size) / 2;
-        if (mIsIgorePadding) {
-            mRectF.set(left, top,
-                    left + size, top + size);
-        } else {
-            mRectF.set(left + getPaddingLeft(), top + getPaddingTop(),
-                    left + size - getPaddingRight(), top + size - getPaddingBottom());
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (mAnimatorSet != null && mAnimatorSet.isRunning()) {
-            mAnimatorSet.cancel();
-        }
     }
 
     @Override

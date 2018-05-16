@@ -13,11 +13,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        startActivity(RippleActivity.class);
+        startActivity(RevealActivity.class);
     }
 
     @OnClick({R.id.btn_link_recycler_view, R.id.btn_swipe_image_verify, R.id.btn_location, R.id.btn_label,
-            R.id.btn_ripple})
+            R.id.btn_reveal})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_link_recycler_view:
@@ -32,8 +32,8 @@ public class MainActivity extends BaseActivity {
             case R.id.btn_label:
                 startActivity(LabelActivity.class);
                 break;
-            case R.id.btn_ripple:
-                startActivity(RippleActivity.class);
+            case R.id.btn_reveal:
+                startActivity(RevealActivity.class);
                 break;
         }
     }

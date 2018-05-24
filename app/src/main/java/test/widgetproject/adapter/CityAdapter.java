@@ -14,7 +14,7 @@ import test.widgetproject.main.R;
 
 public class CityAdapter extends BaseQuickAdapter<City, BaseViewHolder> {
     public CityAdapter() {
-        super(R.layout.item_location);
+        super(R.layout.item_city);
     }
 
     @Override

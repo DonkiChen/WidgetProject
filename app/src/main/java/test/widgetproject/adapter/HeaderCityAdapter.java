@@ -14,7 +14,7 @@ import test.widgetproject.main.R;
 
 public class HeaderCityAdapter extends BaseQuickAdapter<City, BaseViewHolder> {
     public HeaderCityAdapter() {
-        super(R.layout.item_header_location);
+        super(R.layout.item_header_city);
     }
 
     @Override

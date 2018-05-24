@@ -19,7 +19,6 @@ import java.util.TreeMap;
 
 import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
@@ -38,8 +37,8 @@ import test.widgetproject.widget.SlideBar;
  * @author ChenFanlin
  */
 
-public class LocationActivity extends BaseActivity {
-    private static final String TAG = LocationActivity.class.getSimpleName();
+public class CityActivity extends BaseActivity {
+    private static final String TAG = CityActivity.class.getSimpleName();
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
     @BindView(R.id.slideBar)
@@ -64,7 +63,7 @@ public class LocationActivity extends BaseActivity {
 
     @Override
     public int getLayoutRes() {
-        return R.layout.activity_location;
+        return R.layout.activity_city;
     }
 
     @Override
@@ -84,7 +83,7 @@ public class LocationActivity extends BaseActivity {
     }
 
     private void initHeaderView() {
-        mHeaderView = getLayoutInflater().inflate(R.layout.header_location_gps, mRecyclerView, false);
+        mHeaderView = getLayoutInflater().inflate(R.layout.header_city_gps, mRecyclerView, false);
         RecyclerView recyclerViewHistory = mHeaderView.findViewById(R.id.recyclerViewHistory);
         RecyclerView recyclerViewHot = mHeaderView.findViewById(R.id.recyclerViewHot);
 

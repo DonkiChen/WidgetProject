@@ -1,10 +1,15 @@
 package test.widgetproject.main;
 
-import android.view.View;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
-import butterknife.OnClick;
+import butterknife.BindView;
+import test.widgetproject.adapter.MainAdapter;
 
 public class MainActivity extends BaseActivity {
+
+    @BindView(R.id.rv_main)
+    RecyclerView mRvMain;
 
     @Override
     public int getLayoutRes() {
@@ -13,28 +18,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        startActivity(RevealActivity.class);
+        mRvMain.setLayoutManager(new LinearLayoutManager(this));
+        mRvMain.setAdapter(new MainAdapter());
+        startActivity(PatternLockActivity.class);
     }
 
-    @OnClick({R.id.btn_link_recycler_view, R.id.btn_swipe_image_verify, R.id.btn_location, R.id.btn_label,
-            R.id.btn_reveal})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_link_recycler_view:
-                startActivity(LinkRecyclerViewActivity.class);
-                break;
-            case R.id.btn_swipe_image_verify:
-                startActivity(SwipeImageVerifyActivity.class);
-                break;
-            case R.id.btn_location:
-                startActivity(LocationActivity.class);
-                break;
-            case R.id.btn_label:
-                startActivity(LabelActivity.class);
-                break;
-            case R.id.btn_reveal:
-                startActivity(RevealActivity.class);
-                break;
-        }
-    }
 }

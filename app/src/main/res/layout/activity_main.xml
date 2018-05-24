@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fl_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -9,34 +8,9 @@
     tools:context="test.widgetproject.main.MainActivity"
     tools:ignore="HardcodedText">
 
-    <Button
-        android:id="@+id/btn_link_recycler_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="link_recycler_view" />
-
-    <Button
-        android:id="@+id/btn_swipe_image_verify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="swipe_image_verify" />
-
-    <Button
-        android:id="@+id/btn_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="location" />
-
-    <Button
-        android:id="@+id/btn_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="label" />
-
-    <Button
-        android:id="@+id/btn_reveal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="reveal" />
-
+        android:overScrollMode="never"/>
 </LinearLayout>

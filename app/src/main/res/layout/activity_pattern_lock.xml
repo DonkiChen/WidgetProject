@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <test.widgetproject.widget.MiPatternLock
+    <test.widgetproject.widget.PatternLock
+        android:id="@+id/patternLock"
         android:layout_width="300dp"
         android:layout_height="300dp" />
 </LinearLayout>

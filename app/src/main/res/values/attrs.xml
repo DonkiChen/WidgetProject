@@ -29,18 +29,21 @@
         <attr name="labelBackgroundColor" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="DualProgressView">
-        <attr name="dpv_anim_duration" format="integer" />
-        <attr name="dpv_outer_color" format="color" />
-        <attr name="dpv_inner_color" format="color" />
-        <attr name="dpv_thickness" format="dimension" />
-        <attr name="dpv_inner_padding" format="dimension" />
-    </declare-styleable>
-
     <declare-styleable name="ProgressTextView">
         <attr name="ptvColor" format="color" />
         <attr name="ptvWidth" format="dimension" />
-        <attr name="ptvFitTextHeight" format="boolean"/>
-        <attr name="ptvIgnorePadding" format="boolean"/>
+        <attr name="ptvFitTextHeight" format="boolean" />
+        <attr name="ptvIgnorePadding" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="PatternLock">
+        <attr name="plMinSelectedCount" format="integer" />
+        <attr name="plPointColor" format="color" />
+        <attr name="plErrorPointColor" format="color" />
+        <attr name="plLineColor" format="color" />
+        <attr name="plErrorLineColor" format="color" />
+        <attr name="plPointTouchRadius" format="dimension" />
+        <attr name="plPointRadius" format="dimension" />
+        <attr name="plSpanCount" format="integer" />
     </declare-styleable>
 </resources>

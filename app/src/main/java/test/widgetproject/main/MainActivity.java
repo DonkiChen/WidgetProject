@@ -20,7 +20,7 @@ public class MainActivity extends BaseActivity {
     public void initView() {
         mRvMain.setLayoutManager(new LinearLayoutManager(this));
         mRvMain.setAdapter(new MainAdapter());
-        startActivity(PatternLockActivity.class);
+        startActivity(KeyboardActivity.class);
     }
 
 }

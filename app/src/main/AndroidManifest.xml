@@ -27,6 +27,8 @@
         <activity android:name=".RoundCornerActivity" />
         <activity android:name=".BannerActivity" />
         <activity android:name=".PatternLockActivity" />
+        <activity android:name=".DemoActivity" />
+        <activity android:name=".KeyboardActivity" />
     </application>
 
 </manifest>

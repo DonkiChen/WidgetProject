@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 import test.widgetproject.main.BannerActivity;
 import test.widgetproject.main.CityActivity;
+import test.widgetproject.main.DemoActivity;
+import test.widgetproject.main.KeyboardActivity;
 import test.widgetproject.main.LabelActivity;
 import test.widgetproject.main.LinkRecyclerViewActivity;
 import test.widgetproject.main.PatternLockActivity;
@@ -52,8 +54,10 @@ public class MainAdapter extends BaseQuickAdapter<MainAdapter.Bean, BaseViewHold
         LABEL("label", LabelActivity.class),
         REVEAL("reveal", RevealActivity.class),
         BANNER("banner", BannerActivity.class),
-        DEMO("round_corner", RoundCornerActivity.class),
-        MI_PATTERN_LOCK("mi_pattern_lock", PatternLockActivity.class);
+        ROUND_CORNER("round_corner", RoundCornerActivity.class),
+        MI_PATTERN_LOCK("mi_pattern_lock", PatternLockActivity.class),
+        DEMO("demo", DemoActivity.class),
+        KEYBOARD("keyboard", KeyboardActivity.class);
 
         private final String mDescription;
         private final Class<?> mActivityClass;

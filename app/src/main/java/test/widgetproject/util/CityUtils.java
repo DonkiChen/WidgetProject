@@ -1,5 +1,6 @@
 package test.widgetproject.util;
 
+import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
 import android.text.TextUtils;
 
@@ -33,8 +34,25 @@ import test.widgetproject.entity.City;
 
 public class CityUtils extends BaseUtils {
 
+    @SuppressLint("CheckResult")
     public static void getCities(final OnDataLoadListener listener) {
-        Flowable.create(new FlowableOnSubscribe<JSONArray>() {
+        getCitiesFlowable()
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(Subscription subscription) throws Exception {
+                        listener.onStart();
+                    }
+                })
+                .subscribe(new Consumer<List<City>>() {
+                    @Override
+                    public void accept(List<City> cities) throws Exception {
+                        listener.onFinished(cities);
+                    }
+                });
+    }
+
+    public static Flowable<List<City>> getCitiesFlowable() {
+        return Flowable.create(new FlowableOnSubscribe<JSONArray>() {
             @Override
             public void subscribe(FlowableEmitter<JSONArray> e) throws Exception {
                 JSONArray jsonArray = new JSONArray(jsonToString());
@@ -43,12 +61,6 @@ public class CityUtils extends BaseUtils {
             }
         }, BackpressureStrategy.BUFFER)
                 .subscribeOn(Schedulers.io())
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription subscription) throws Exception {
-                        listener.onStart();
-                    }
-                })
                 .map(new Function<JSONArray, List<JSONArray>>() {
                     @Override
                     public List<JSONArray> apply(JSONArray jsonArray) throws Exception {
@@ -81,14 +93,7 @@ public class CityUtils extends BaseUtils {
                         }
                         return cities;
                     }
-                })
-                .subscribe(new Consumer<List<City>>() {
-                    @Override
-                    public void accept(List<City> cities) throws Exception {
-                        listener.onFinished(cities);
-                    }
                 });
-
     }
 
     private static String jsonToString() {

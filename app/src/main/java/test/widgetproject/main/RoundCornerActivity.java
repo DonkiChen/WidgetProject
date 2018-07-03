@@ -8,7 +8,7 @@ package test.widgetproject.main;
 public class RoundCornerActivity extends BaseActivity {
     @Override
     public int getLayoutRes() {
-        return R.layout.activity_demo;
+        return R.layout.activity_round;
     }
 
     @Override

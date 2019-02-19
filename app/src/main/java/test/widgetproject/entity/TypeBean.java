@@ -1,5 +1,7 @@
 package test.widgetproject.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -34,6 +36,7 @@ public class TypeBean {
     }
 
     public static class ItemBean {
+        @SerializedName(value = "item1", alternate = {"item2", "item3"})
         private String item;
 
         public ItemBean(String item) {

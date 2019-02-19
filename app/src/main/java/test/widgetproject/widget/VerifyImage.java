@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -132,7 +133,24 @@ public class VerifyImage extends android.support.v7.widget.AppCompatImageView {
     }
 
     private void createMask() {
-        mMaskBitmap = getMaskBitmap(((BitmapDrawable) getDrawable()).getBitmap(), mMaskPath);
+        if (getDrawable() == null) {
+            return;
+        }
+        Bitmap source;
+        if (getDrawable() instanceof BitmapDrawable) {
+            source = ((BitmapDrawable) getDrawable()).getBitmap();
+        } else {
+            int w = getDrawable().getIntrinsicWidth();
+            int h = getDrawable().getIntrinsicHeight();
+            source = Bitmap.createBitmap(w, h,
+                    getDrawable().getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
+            Canvas canvas = new Canvas(source);
+            getDrawable().setBounds(0, 0, w, h);
+            getDrawable().draw(canvas);
+
+
+        }
+        mMaskBitmap = getMaskBitmap(source, mMaskPath);
         //滑块阴影
         mMaskShadowBitmap = mMaskBitmap.extractAlpha();
         //拖动的位移重置
@@ -193,7 +211,7 @@ public class VerifyImage extends android.support.v7.widget.AppCompatImageView {
 
     public void bindSeekBar(SeekBar seekBar) {
         mSeekBar = seekBar;
-//        mSeekBar.setOnSeekBarChangeListener(this);
+        mSeekBar.setClickable(false);
         mSeekBar.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -208,7 +226,6 @@ public class VerifyImage extends android.support.v7.widget.AppCompatImageView {
                         }
                         break;
                     case MotionEvent.ACTION_DOWN:
-                        break;
                     case MotionEvent.ACTION_MOVE:
                         // FIXME: 2018/4/20 左右会超出范围
                         int x;

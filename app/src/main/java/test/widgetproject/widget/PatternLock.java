@@ -40,7 +40,7 @@ public class PatternLock extends View {
     private int mSpanCount = 3;
 
     private Paint mPaint;
-    private PatternPoint[] mPatternPoints = new PatternPoint[mSpanCount * mSpanCount];
+    private PatternPoint[] mPatternPoints;
     private PatternPoint mLatestTouchedPoint;
     private boolean mIsError = false;
     private List<PatternPoint> mSelectedPoint = new ArrayList<>();
@@ -50,10 +50,18 @@ public class PatternLock extends View {
     private OnResultListener mOnResultListener;
     private SecretKeyComparator mSecretKeyComparator;
     private OnConfigListener mOnConfigListener;
+    //是否在设置密码
     private boolean mIsConfigMode = false;
+    //是否在设定延迟后自动清除图案
     private boolean mAutoCleanPattern = true;
+    //清除图案延迟
     private int mAutoCleanDelay = 1000;
-    private AutoCleanRunnable mAutoCleanRunnable = new AutoCleanRunnable();
+    private Runnable mAutoCleanRunnable = new Runnable() {
+        @Override
+        public void run() {
+            reset();
+        }
+    };
 
     public PatternLock(Context context) {
         this(context, null);
@@ -65,8 +73,9 @@ public class PatternLock extends View {
 
     public PatternLock(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
         initAttrs(attrs);
+        init();
+        initPatternPoints();
     }
 
     /**
@@ -82,12 +91,16 @@ public class PatternLock extends View {
 
     private void init() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(mPointRadius * 2);
+    }
+
+    private void initPatternPoints() {
+        mPatternPoints = new PatternPoint[mSpanCount * mSpanCount];
         int length = mPatternPoints.length;
         for (int i = 0; i < length; i++) {
             mPatternPoints[i] = new PatternPoint(0, 0);
         }
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(mPointRadius * 2);
     }
 
     private void initAttrs(@Nullable AttributeSet attrs) {
@@ -109,6 +122,8 @@ public class PatternLock extends View {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        mTouchingX = event.getX();
+        mTouchingY = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 getParent().requestDisallowInterceptTouchEvent(true);
@@ -125,8 +140,6 @@ public class PatternLock extends View {
                     addPoint(newPoint);
                     mLatestTouchedPoint = newPoint;
                 }
-                mTouchingX = event.getX();
-                mTouchingY = event.getY();
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
@@ -135,37 +148,38 @@ public class PatternLock extends View {
                 mLatestTouchedPoint = null;
                 mIsTouching = false;
                 String secretKey = mSelectedPoint.toString();
-                if (mIsConfigMode) {
-                    //设置密码时
-                    if (mOnConfigListener != null) {
-                        if (mSelectedPoint.size() >= mMinSelectedPointCount) {
-                            mOnConfigListener.onSuccess(mSelectedPoint, secretKey);
-                        } else {
-                            mOnConfigListener.onFailed(mSelectedPoint);
-                        }
-                    }
-                } else {
-                    //解锁时
-                    if (mSelectedPoint.size() >= mMinSelectedPointCount) {
-                        if (mSecretKeyComparator != null && mOnResultListener != null) {
-                            mIsError = !mSecretKeyComparator.onCompare(secretKey);
-                            if (mIsError) {
-                                mOnResultListener.onFailed(mSelectedPoint);
+                if (mSelectedPoint.size() > 0) {
+                    if (mIsConfigMode) {
+                        //设置密码时
+                        if (mOnConfigListener != null) {
+                            if (mSelectedPoint.size() >= mMinSelectedPointCount) {
+                                mOnConfigListener.onSuccess(mSelectedPoint, secretKey);
                             } else {
-                                mOnResultListener.onSuccess(mSelectedPoint, secretKey);
+                                mOnConfigListener.onFailed(mSelectedPoint);
                             }
                         }
                     } else {
-                        mIsError = true;
-                        mOnResultListener.onFailed(mSelectedPoint);
+                        //解锁时
+                        if (mSelectedPoint.size() >= mMinSelectedPointCount) {
+                            if (mSecretKeyComparator != null && mOnResultListener != null) {
+                                mIsError = !mSecretKeyComparator.onCompare(secretKey);
+                                if (mIsError) {
+                                    mOnResultListener.onFailed(mSelectedPoint);
+                                } else {
+                                    mOnResultListener.onSuccess(mSelectedPoint, secretKey);
+                                }
+                            }
+                        } else {
+                            mIsError = true;
+                            mOnResultListener.onFailed(mSelectedPoint);
+                        }
                     }
+                    if (mAutoCleanPattern) {
+                        //自动清除画的图案
+                        postDelayed(mAutoCleanRunnable, mAutoCleanDelay);
+                    }
+                    invalidate();
                 }
-                if (mAutoCleanPattern) {
-                    //自动清除画的图案
-                    setEnabled(false);
-                    postDelayed(mAutoCleanRunnable, mAutoCleanDelay);
-                }
-                invalidate();
                 break;
         }
         return true;
@@ -174,7 +188,11 @@ public class PatternLock extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        int size = Math.min(w, h);
+        calPointCoordinate(w, h);
+    }
+
+    private void calPointCoordinate(int w, int h) {
+        int size = Math.min(w - getPaddingLeft() - getPaddingRight(), h - getPaddingTop() - getPaddingBottom());
         int length = mPatternPoints.length;
         int offset = mPointRadius;
         int xOffset;
@@ -184,8 +202,8 @@ public class PatternLock extends View {
             xOffset = (1 - i % mSpanCount) * offset;
             yOffset = (1 - i / mSpanCount) * offset;
             patternPoint.index = i;
-            patternPoint.x = (int) (i % mSpanCount / (mSpanCount - 1.0) * size + xOffset);
-            patternPoint.y = (int) (i / mSpanCount / (mSpanCount - 1.0) * size + yOffset);
+            patternPoint.x = (int) (i % mSpanCount / (mSpanCount - 1.0) * size + xOffset) + getPaddingLeft();
+            patternPoint.y = (int) (i / mSpanCount / (mSpanCount - 1.0) * size + yOffset) + getPaddingTop();
         }
     }
 
@@ -214,10 +232,10 @@ public class PatternLock extends View {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int minSize = mPointRadius * mSpanCount + mPointTouchRadius * mSpanCount;
         if (widthMode == MeasureSpec.AT_MOST) {
-            widthSize = minSize + getPaddingLeft() + getPaddingRight();
+            widthSize = Math.max(widthSize, minSize + getPaddingLeft() + getPaddingRight());
         }
         if (heightMode == MeasureSpec.AT_MOST) {
-            heightSize = minSize + getPaddingTop() + getPaddingBottom();
+            heightSize = Math.max(heightSize, minSize + getPaddingTop() + getPaddingBottom());
         }
         setMeasuredDimension(widthSize, heightSize);
     }
@@ -312,6 +330,8 @@ public class PatternLock extends View {
     }
 
     public void reset() {
+        removeCallbacks(mAutoCleanRunnable);
+        mLatestTouchedPoint = null;
         mSelectedPoint.clear();
         mIsError = false;
         invalidate();
@@ -443,6 +463,9 @@ public class PatternLock extends View {
     public void setSpanCount(int spanCount) {
         if (mSpanCount != spanCount) {
             mSpanCount = spanCount;
+            initPatternPoints();
+            reset();
+            calPointCoordinate(getMeasuredWidth(), getMeasuredHeight());
             requestLayout();
         }
     }
@@ -542,15 +565,6 @@ public class PatternLock extends View {
         @Override
         public String toString() {
             return String.valueOf(index);
-        }
-    }
-
-    private class AutoCleanRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            reset();
-            setEnabled(true);
         }
     }
 }

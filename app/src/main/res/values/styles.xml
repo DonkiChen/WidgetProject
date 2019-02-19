@@ -6,6 +6,22 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/transition_share_image</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- 代码还需要设置SystemUI Visibility -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!-- 填充状态栏 -->
+        <item name="android:fitsSystemWindows">true</item>
+        <!-- 透明状态栏 -->
+        <item name="android:windowTranslucentStatus">true</item>
+        <!-- 透明导航栏 -->
+        <item name="android:windowTranslucentNavigation">false</item>
+
     </style>
 
 </resources>

@@ -9,7 +9,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_type"
         android:layout_width="100dp"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="100dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_item"
@@ -31,8 +32,8 @@
 
     <ImageView
         android:id="@+id/iv_shop"
-        android:src="#00F"
-        android:layout_gravity="bottom"
         android:layout_width="100dp"
-        android:layout_height="100dp" />
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:src="#00F" />
 </FrameLayout>

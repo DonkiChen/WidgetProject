@@ -47,8 +47,8 @@ public class RevealActivity extends BaseActivity {
 
     @OnClick(R.id.tv_concern)
     public void onTextViewConcernClicked() {
-//        mockNetwork(mTvConcern, true);
-        mTvConcern.setShowProgress(true);
+        mockNetwork(mTvConcern, true);
+        //mTvConcern.setShowProgress(true);
     }
 
     @OnClick(R.id.tv_concerned)

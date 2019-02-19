@@ -1,6 +1,8 @@
 package test.widgetproject.main;
 
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 
 import com.mvp.base.util.ToastUtils;
 
@@ -17,7 +19,11 @@ import test.widgetproject.widget.PatternLock;
 public class PatternLockActivity extends BaseActivity {
     @BindView(R.id.patternLock)
     PatternLock mPatternLock;
+    @BindView(R.id.button)
+    Button mButton;
+
     private String mSecretKey;
+    private int mSpanCount = 3;
 
     @Override
     public int getLayoutRes() {
@@ -32,6 +38,7 @@ public class PatternLockActivity extends BaseActivity {
             public void onSuccess(List<PatternLock.PatternPoint> selectedPoints, String secretKey) {
                 mPatternLock.setConfigMode(false);
                 mSecretKey = secretKey;
+                ToastUtils.showShortSafe("设置密码:" + secretKey);
             }
 
             @Override
@@ -54,6 +61,17 @@ public class PatternLockActivity extends BaseActivity {
             @Override
             public void onFailed(List<PatternLock.PatternPoint> selectedPoints) {
                 ToastUtils.showShortSafe("密码错误");
+            }
+        });
+        mPatternLock.setSpanCount(mSpanCount);
+        mButton.setText(mSpanCount + " x " + mSpanCount);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSpanCount = (++mSpanCount) % 3 + 3;
+                mPatternLock.setSpanCount(mSpanCount);
+                mButton.setText(mSpanCount + " x " + mSpanCount);
+                mPatternLock.setConfigMode(true);
             }
         });
     }

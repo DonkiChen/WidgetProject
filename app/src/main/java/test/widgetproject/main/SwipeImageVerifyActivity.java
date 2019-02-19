@@ -29,23 +29,6 @@ public class SwipeImageVerifyActivity extends BaseActivity {
     @Override
     public void initView() {
         mSeekBar.setMax(100);
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.d(TAG, "onProgressChanged: " + progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                Log.d(TAG, "onStartTrackingTouch: ");
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d(TAG, "onStopTrackingTouch: ");
-            }
-        });
-
         mVerifyImage.bindSeekBar(mSeekBar);
     }
 }

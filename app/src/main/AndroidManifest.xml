@@ -2,15 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="test.widgetproject.main">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="test.widgetproject.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name="test.widgetproject.MyApplication"
         android:theme="@style/AppTheme">
         <activity android:name="test.widgetproject.main.MainActivity">
             <intent-filter>
@@ -25,10 +25,12 @@
         <activity android:name=".LabelActivity" />
         <activity android:name=".RevealActivity" />
         <activity android:name=".RoundCornerActivity" />
-        <activity android:name=".BannerActivity" />
         <activity android:name=".PatternLockActivity" />
-        <activity android:name=".DemoActivity" />
-        <activity android:name=".KeyboardActivity" />
+        <activity android:name=".TopicActivity" />
+        <activity android:name=".RulerActivity" />
+        <activity android:name=".LazyActivity" />
+        <activity android:name=".ShareActivity" />
+        <activity android:name=".SharePreviewActivity" />
     </application>
 
 </manifest>

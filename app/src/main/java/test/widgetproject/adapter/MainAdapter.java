@@ -8,17 +8,17 @@ import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.Arrays;
 
-import test.widgetproject.main.BannerActivity;
 import test.widgetproject.main.CityActivity;
-import test.widgetproject.main.DemoActivity;
-import test.widgetproject.main.KeyboardActivity;
 import test.widgetproject.main.LabelActivity;
 import test.widgetproject.main.LinkRecyclerViewActivity;
 import test.widgetproject.main.PatternLockActivity;
 import test.widgetproject.main.R;
 import test.widgetproject.main.RevealActivity;
 import test.widgetproject.main.RoundCornerActivity;
+import test.widgetproject.main.RulerActivity;
+import test.widgetproject.main.ShareActivity;
 import test.widgetproject.main.SwipeImageVerifyActivity;
+import test.widgetproject.main.TopicActivity;
 
 /**
  * Created on 2018/5/23.
@@ -48,16 +48,17 @@ public class MainAdapter extends BaseQuickAdapter<MainAdapter.Bean, BaseViewHold
     }
 
     enum Bean {
-        LINK_RECYCLER_VIEW("link_recycler_view", LinkRecyclerViewActivity.class),
-        SWIPE_IMAGE_VERIFY("swipe_image_verify", SwipeImageVerifyActivity.class),
-        CITY("city", CityActivity.class),
-        LABEL("label", LabelActivity.class),
-        REVEAL("reveal", RevealActivity.class),
-        BANNER("banner", BannerActivity.class),
-        ROUND_CORNER("round_corner", RoundCornerActivity.class),
-        MI_PATTERN_LOCK("mi_pattern_lock", PatternLockActivity.class),
-        DEMO("demo", DemoActivity.class),
-        KEYBOARD("keyboard", KeyboardActivity.class);
+        LINK_RECYCLER_VIEW("联动RecyclerView", LinkRecyclerViewActivity.class),
+        SWIPE_IMAGE_VERIFY("滑动验证码", SwipeImageVerifyActivity.class),
+        CITY("城市选择", CityActivity.class),
+        LABEL("标签", LabelActivity.class),
+        REVEAL("关注动画", RevealActivity.class),
+        ROUND_CORNER("圆角约束布局", RoundCornerActivity.class),
+        PATTERN_LOCK("图案解锁", PatternLockActivity.class),
+        TOPIC("话题Span", TopicActivity.class),
+        RULER_VIEW("尺子", RulerActivity.class),
+        //LAZY_FRAGMENT("lazy_fragment", LazyActivity.class),
+        SHARE_ELEMENT("ViewPager,Fragment与共享动画", ShareActivity.class);
 
         private final String mDescription;
         private final Class<?> mActivityClass;

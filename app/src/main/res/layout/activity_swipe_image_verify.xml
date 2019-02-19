@@ -9,7 +9,7 @@
         android:id="@+id/verifyImage"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher"/>
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="300dp"

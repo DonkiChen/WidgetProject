@@ -37,7 +37,7 @@ public class RoundCornerConstraintLayout extends ConstraintLayout {
     }
 
     private void init() {
-        mCornerPaint.setColor(Color.WHITE);
+        mCornerPaint.setColor(Color.BLACK);
         mCornerPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -57,10 +57,10 @@ public class RoundCornerConstraintLayout extends ConstraintLayout {
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
+    public void dispatchDraw(Canvas canvas) {
         if (getBackground() == null) {
             //在没有背景时,不会调用draw,所以在这绘制圆角
-            int saved = canvas.saveLayer(mRectF, null, Canvas.ALL_SAVE_FLAG);
+            int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
             super.dispatchDraw(canvas);
             drawRoundPath(canvas, saved);
         } else {

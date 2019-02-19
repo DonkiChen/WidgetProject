@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -86,17 +85,16 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
             }
         });
         mRvType.getItemAnimator().setChangeDuration(0);
-        mRvType.setOnTouchListener(new View.OnTouchListener() {
+        mTypeAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                TypeBean typeBean = mTypeAdapter.getItem(findTypeByTouch(event.getX(), event.getY()));
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                TypeBean typeBean = mTypeAdapter.getItem(position);
                 if (typeBean != null) {
                     int itemPosition = findItemFirstPosition(typeBean);
 //                    mRvItem.smoothScrollToPosition(itemPosition);
                     LinearLayoutManager layoutManager = (LinearLayoutManager) mRvItem.getLayoutManager();
                     layoutManager.scrollToPositionWithOffset(itemPosition, 0);
                 }
-                return false;
             }
         });
 
@@ -121,12 +119,16 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
         mRvItem.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                //获取子列表中的第一个item,获取所属的type,将其选中
                 int firstPosition = itemLayoutManager.findFirstVisibleItemPosition();
                 TypeBean currentType = findType(itemAdapter.getItem(firstPosition));
                 mTypeAdapter.setSelectedType(currentType);
                 if (currentType != null) {
                     mTvTitle.setText(currentType.getType());
                 }
+                //使当前type可见
+                int typePosition = mTypeAdapter.getData().indexOf(currentType);
+                mRvType.smoothScrollToPosition(typePosition);
             }
         });
         itemAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -158,6 +160,12 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
         return mTotalItemBeanList.indexOf(firstItem);
     }
 
+    /**
+     * 查找目标item所属的type
+     *
+     * @param item 目标item
+     * @return 所属type
+     */
     private TypeBean findType(TypeBean.ItemBean item) {
         for (TypeBean typeBean : mTypeBeanList) {
             if (typeBean.getItems().contains(item)) {
@@ -167,6 +175,12 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * 利用Path实现落到购物车的动画
+     *
+     * @param clickedView
+     * @param tvAnimation
+     */
     private void animateByPath(View clickedView, final TextView tvAnimation) {
         int[] startLoc = new int[2];
         clickedView.getLocationInWindow(startLoc);
@@ -175,20 +189,22 @@ public class LinkRecyclerViewActivity extends AppCompatActivity {
 
         int startX = startLoc[0] + (clickedView.getWidth() - mAnimationViewSize) / 2;
         int startY = startLoc[1] - mTitleAndStatusHeight + (clickedView.getHeight() - mAnimationViewSize) / 2;
-        float toX = endLoc[0] + (mIvShop.getWidth() - mAnimationViewSize) / 2;
-        float toY = endLoc[1] - mTitleAndStatusHeight + (mIvShop.getHeight() - mAnimationViewSize) / 2;
+        float toX = endLoc[0] + (mIvShop.getWidth() - mAnimationViewSize) / 2F;
+        float toY = endLoc[1] - mTitleAndStatusHeight + (mIvShop.getHeight() - mAnimationViewSize) / 2F;
 
         Path path = new Path();
         path.moveTo(startX, startY);
         path.quadTo((startX + toX) / 2, startY, toX, toY);
+        //利用PathMeasure计算动画中当前点的坐标
         final PathMeasure measure = new PathMeasure(path, false);
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, measure.getLength());
         valueAnimator.setDuration(500);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            float[] current = new float[2];
+
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (float) animation.getAnimatedValue();
-                float[] current = new float[2];
                 measure.getPosTan(value, current, null);
                 tvAnimation.setTranslationX(current[0]);
                 tvAnimation.setTranslationY(current[1]);
